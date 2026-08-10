@@ -120,6 +120,74 @@
   --scrollbar-thumb: #94a3b8;
 }
 
+/* ---- NEON THEME ---- */
+[data-theme="neon"] {
+  --bg-base:        #050014;
+  --bg-surface:     #0c0524;
+  --bg-elevated:    #150a38;
+  --bg-hover:       #1f1050;
+
+  --glass-bg:       rgba(12, 5, 36, 0.75);
+  --glass-border:   rgba(255, 0, 200, 0.25);
+  --glass-blur:     20px;
+
+  --text-primary:   #f3f0ff;
+  --text-secondary: #b39ddb;
+  --text-muted:     #7a6a9e;
+  --text-inverse:   #050014;
+
+  --border:         rgba(255, 0, 200, 0.18);
+  --border-hover:   rgba(0, 245, 255, 0.4);
+
+  --input-bg:       rgba(255, 255, 255, 0.04);
+  --input-border:   rgba(0, 245, 255, 0.25);
+  --input-focus:    rgba(255, 0, 200, 0.5);
+
+  --sidebar-bg:     rgba(5, 0, 20, 0.95);
+  --topbar-bg:      rgba(12, 5, 36, 0.85);
+
+  --scrollbar-bg:   #150a38;
+  --scrollbar-thumb: #ff2ec4;
+
+  /* Neon accent overrides — these drive every "active" state app-wide */
+  --indigo:  #ff2ec4;
+  --blue:    #00f5ff;
+  --purple:  #b829ff;
+  --green:   #39ff8f;
+  --yellow:  #fff01f;
+  --orange:  #ff8f1f;
+  --red:     #ff3860;
+  --teal:    #1ff0d0;
+}
+
+/* Neon glow accents on active/highlighted elements */
+[data-theme="neon"] .nav-item.active {
+  text-shadow: 0 0 8px var(--indigo), 0 0 18px rgba(255,46,196,0.6);
+}
+[data-theme="neon"] .nav-item.active::before {
+  box-shadow: 0 0 10px var(--indigo), 0 0 22px var(--indigo);
+}
+[data-theme="neon"] .view-btn.active,
+[data-theme="neon"] .view-btn[aria-pressed="true"] {
+  box-shadow: 0 0 12px var(--indigo), 0 0 26px rgba(255,46,196,0.5);
+}
+[data-theme="neon"] .page-btn.active {
+  box-shadow: 0 0 10px var(--indigo), 0 0 22px rgba(255,46,196,0.5);
+}
+[data-theme="neon"] .btn-primary {
+  box-shadow: 0 0 14px rgba(255,46,196,0.55);
+}
+[data-theme="neon"] .btn-primary:hover {
+  box-shadow: 0 0 20px rgba(255,46,196,0.8), 0 0 40px rgba(0,245,255,0.35);
+}
+[data-theme="neon"] .active-filters .filter-tag {
+  box-shadow: 0 0 8px rgba(255,46,196,0.45);
+}
+[data-theme="neon"] .glass-card,
+[data-theme="neon"] .table-container {
+  box-shadow: 0 0 0 1px rgba(255,0,200,0.08), var(--shadow);
+}
+
 /* ---- RESET & BASE ---- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1722,7 +1790,7 @@ input[type="search"]::-ms-reveal {
           </div>
         </div>
         <div class="topbar-right">
-          <button class="btn btn-icon" id="theme-toggle" aria-label="Toggle dark/light mode">
+          <button class="btn btn-icon" id="theme-toggle" aria-label="Cycle theme (Dark / Light / Neon)" title="Switch theme">
             <i class="fas fa-moon" id="theme-icon"></i>
           </button>
           <!-- ADMIN TOGGLE BUTTON -->
@@ -2402,15 +2470,21 @@ function showToast(message, type = 'success', duration = 3500) {
 function initTheme() {
   setTheme(localStorage.getItem('tms-theme') || 'dark');
 }
+const THEME_ORDER = ['dark', 'light', 'neon'];
+const THEME_ICONS = { dark: 'fa-sun', light: 'fa-moon', neon: 'fa-bolt' };
 function setTheme(theme) {
+  if (!THEME_ORDER.includes(theme)) theme = 'dark';
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('tms-theme', theme);
-  const cls = theme === 'dark' ? 'fa-sun' : 'fa-moon';
   const ic = $('#theme-icon');
-  if (ic) ic.className = `fas ${cls}`;
+  if (ic) ic.className = `fas ${THEME_ICONS[theme]}`;
+  const btn = $('#theme-toggle');
+  if (btn) btn.setAttribute('title', `Theme: ${theme[0].toUpperCase()}${theme.slice(1)} (click to switch)`);
 }
 function toggleTheme() {
-  setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = THEME_ORDER[(THEME_ORDER.indexOf(current) + 1) % THEME_ORDER.length];
+  setTheme(next);
 }
 
 /* ============================================================
